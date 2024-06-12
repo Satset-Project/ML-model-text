@@ -1,6 +1,10 @@
 import tensorflow as tf
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+# Define the model
+from keras.initializers import Orthogonal
+from tensorflow.keras.models import load_model
 import pandas as pd
 
 categories = {
@@ -100,9 +104,11 @@ def generate_response(description):
     max_sequence_length = max(len(seq) for seq in sequences)
     padded_sequence = pad_sequences(sequences, maxlen=max_sequence_length, padding='post')
 
+    custom_objects = {
+        'Orthogonal': Orthogonal
+    }
 
-    # Define the model
-    model = tf.keras.models.load_model("issue_classification_model.h5")
+    model = load_model('issue_classification_model.h5', custom_objects=custom_objects)
     
     # Predict category and action
     category_pred, action_pred = model.predict(padded_sequence)
