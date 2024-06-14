@@ -8,15 +8,14 @@ Original file is located at
 """
 
 import pandas as pd
-data = pd.read_excel('/content/training.xlsx')
-
-df=data
-
-df
-
 import tensorflow as tf
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+
+#Load the data
+data = pd.read_excel('/content/training.xlsx')
+df=data
+df
 
 # Prepare the tokenizer
 tokenizer = Tokenizer()
