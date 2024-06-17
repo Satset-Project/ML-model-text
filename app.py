@@ -1,12 +1,13 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-import tensorflow as tf
-from tensorflow.keras.preprocessing.sequence import pad_sequences
 import pandas as pd
+import tensorflow as tf
+from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 app = FastAPI()
 
-# Load tokenizer and model
+# Global variables for tokenizer, model, and max sequence length
 tokenizer = None
 model = None
 max_sequence_length = None
@@ -19,12 +20,12 @@ class RequestBody(BaseModel):
 def load_model_and_tokenizer():
     global tokenizer, model, max_sequence_length, df
     
-    # Load DataFrame and tokenizer
+    # Load DataFrame
     data = pd.read_excel('/content/training.xlsx')
     df = data
     
     # Prepare the tokenizer
-    tokenizer = tf.keras.preprocessing.text.Tokenizer()
+    tokenizer = Tokenizer()
     tokenizer.fit_on_texts(df['Sentence'])
     
     # Convert text to sequences
@@ -38,7 +39,6 @@ def load_model_and_tokenizer():
 # Initialize model and tokenizer when the app starts
 load_model_and_tokenizer()
 
-# Prediction endpoint
 @app.post("/chatbox")
 async def predict(item: RequestBody):
     global tokenizer, model, max_sequence_length, df
@@ -68,3 +68,7 @@ async def predict(item: RequestBody):
         "message": "success",
         "response": response
     }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
